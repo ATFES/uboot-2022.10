@@ -18,6 +18,7 @@
 #include <virtio.h>
 #include <asm/io.h>
 #include <asm/sections.h>
+#include <asm/csr.h>
 #include <stdlib.h>
 #include <linux/io.h>
 #include <asm/global_data.h>
@@ -980,6 +981,17 @@ int board_init(void)
 	return 0;
 }
 
+static void print_uboot_priv_mode_banner(void)
+{
+#ifdef CONFIG_RISCV_MMODE
+	printf("UBOOT_PRIV_MODE=M (mstatus=0x%lx, text_base=0x%lx)\n",
+	       csr_read(CSR_MSTATUS), (ulong)CONFIG_SYS_TEXT_BASE);
+#elif defined(CONFIG_RISCV_SMODE)
+	printf("UBOOT_PRIV_MODE=S (sstatus=0x%lx, text_base=0x%lx)\n",
+	       csr_read(CSR_SSTATUS), (ulong)CONFIG_SYS_TEXT_BASE);
+#endif
+}
+
 int board_late_init(void)
 {
 	ulong kernel_start;
@@ -999,6 +1011,7 @@ int board_late_init(void)
 	set_data_buffer_env();
 
 	set_serialnumber_based_on_boot_mode();
+	print_uboot_priv_mode_banner();
 
 #ifdef CONFIG_VIDEO_SPACEMIT
 	ret = uclass_probe_all(UCLASS_VIDEO);

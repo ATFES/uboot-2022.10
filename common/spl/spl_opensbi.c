@@ -161,7 +161,11 @@ void spl_invoke_opensbi(struct spl_image_info *spl_image)
 	opensbi_info.magic = FW_DYNAMIC_INFO_MAGIC_VALUE;
 	opensbi_info.version = FW_DYNAMIC_INFO_VERSION;
 	opensbi_info.next_addr = uboot_entry;
+#ifdef CONFIG_RISCV_MMODE
+	opensbi_info.next_mode = FW_DYNAMIC_INFO_NEXT_MODE_M;
+#else
 	opensbi_info.next_mode = FW_DYNAMIC_INFO_NEXT_MODE_S;
+#endif
 	opensbi_info.options = CONFIG_SPL_OPENSBI_SCRATCH_OPTIONS;
 	opensbi_info.boot_hart = gd->arch.boot_hart;
 
