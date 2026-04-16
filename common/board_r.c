@@ -292,6 +292,18 @@ static int initr_announce(void)
 	return 0;
 }
 
+static int initr_k1_priv_mode_banner(void)
+{
+#if defined(CONFIG_RISCV) && defined(CONFIG_TARGET_SPACEMIT_K1X)
+	if (CONFIG_IS_ENABLED(RISCV_MMODE))
+		puts("UBOOT_PRIV_MODE=M\n");
+	else if (CONFIG_IS_ENABLED(RISCV_SMODE))
+		puts("UBOOT_PRIV_MODE=S\n");
+#endif
+
+	return 0;
+}
+
 #ifdef CONFIG_NEEDS_MANUAL_RELOC
 static int initr_manual_reloc_cmdtable(void)
 {
@@ -760,6 +772,7 @@ static init_fnc_t init_sequence_r[] = {
 	api_init,
 #endif
 	console_init_r,		/* fully init console as a device */
+	initr_k1_priv_mode_banner,
 #ifdef CONFIG_DISPLAY_BOARDINFO_LATE
 	console_announce_r,
 	show_board_info,
